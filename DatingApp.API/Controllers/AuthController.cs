@@ -55,9 +55,10 @@ namespace DatingApp.API.Controllers
         public async Task<IActionResult> Login([FromBody] UserForLoginDto userForLoginDto)
         {
 
-            var userFromRepo = await _repo.Login(userForLoginDto.Username,userForLoginDto.Password);
+             var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
             if(userFromRepo == null)
                 return Unauthorized();
+
             //generating token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value);
