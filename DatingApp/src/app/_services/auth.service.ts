@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Observable, observable } from 'rxjs';
 // import { User } from '../DatingApp.API/Models/User';
 
 
@@ -35,5 +36,23 @@ constructor(private http: HttpClient) { }
   }
   register(model: any) {
     return this.http.post(this.baseUrl + 'register', model);
+  }
+  private handleError(error: any) {
+    const applicationError = error.headers.get('Application-Error');
+    if (applicationError) {
+      return Observable.throw(applicationError);
+    }
+    const serverError = error.json();
+    let modelStateErrors = '';
+    if (serverError) {
+      for (const key in serverError) {
+        if (serverError[key]) {
+          modelStateErrors += serverError[key] + '\n';
+        }
+      }
+    }
+    return Observable.throw (
+      modelStateErrors || 'server error'
+    );
   }
 }
